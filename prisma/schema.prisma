@@ -1,0 +1,225 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum OrgRole {
+  OWNER
+  ADMIN
+  STAFF
+}
+
+enum WhitelistStatus {
+  DRAFT
+  OPEN
+  CLOSED
+  ARCHIVED
+}
+
+enum QuestionType {
+  SHORT_TEXT
+  LONG_TEXT
+  NUMBER
+  SINGLE_SELECT
+  MULTI_SELECT
+  DATE
+  CHECKBOX
+}
+
+enum ApplicationStatus {
+  IN_PROGRESS
+  SUBMITTED
+  IN_REVIEW
+  INTERVIEW
+  APPROVED
+  REJECTED
+}
+
+enum ApplicationEventType {
+  STATUS_CHANGED
+  NOTE_ADDED
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  image     String?
+  googleId  String   @unique
+  createdAt DateTime @default(now())
+
+  memberships  OrgMember[]
+  applications Application[]
+  notes        ApplicationNote[]
+  events       ApplicationEvent[]
+
+  @@map("users")
+}
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members    OrgMember[]
+  invites    OrgInvite[]
+  whitelists Whitelist[]
+
+  @@map("organizations")
+}
+
+model OrgMember {
+  id             String   @id @default(cuid())
+  organizationId String
+  userId         String
+  role           OrgRole  @default(STAFF)
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+  @@map("org_members")
+}
+
+model OrgInvite {
+  id             String    @id @default(cuid())
+  organizationId String
+  email          String
+  role           OrgRole   @default(STAFF)
+  token          String    @unique
+  expiresAt      DateTime
+  acceptedAt     DateTime?
+  createdAt      DateTime  @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, email])
+  @@map("org_invites")
+}
+
+model Whitelist {
+  id             String          @id @default(cuid())
+  organizationId String
+  name           String
+  description    String?
+  code           String          @unique
+  status         WhitelistStatus @default(DRAFT)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  sections     FormSection[]
+  applications Application[]
+
+  @@index([organizationId, status])
+  @@map("whitelists")
+}
+
+model FormSection {
+  id          String   @id @default(cuid())
+  whitelistId String
+  title       String
+  description String?
+  order       Int
+  archived    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  whitelist Whitelist      @relation(fields: [whitelistId], references: [id], onDelete: Cascade)
+  questions FormQuestion[]
+
+  @@map("form_sections")
+}
+
+model FormQuestion {
+  id         String       @id @default(cuid())
+  sectionId  String
+  type       QuestionType
+  label      String
+  helpText   String?
+  required   Boolean      @default(false)
+  order      Int
+  options    Json?
+  validation Json?
+  archived   Boolean      @default(false)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  section FormSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  answers Answer[]
+
+  @@map("form_questions")
+}
+
+model Application {
+  id           String            @id @default(cuid())
+  whitelistId  String
+  applicantId  String
+  status       ApplicationStatus @default(IN_PROGRESS)
+  submittedAt  DateTime?
+  reviewedAt   DateTime?
+  reviewedById String?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  whitelist Whitelist          @relation(fields: [whitelistId], references: [id], onDelete: Cascade)
+  applicant User               @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+  answers   Answer[]
+  notes     ApplicationNote[]
+  events    ApplicationEvent[]
+
+  @@unique([whitelistId, applicantId])
+  @@index([whitelistId, status])
+  @@map("applications")
+}
+
+model Answer {
+  id            String   @id @default(cuid())
+  applicationId String
+  questionId    String
+  value         Json
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  application Application  @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  question    FormQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([applicationId, questionId])
+  @@map("answers")
+}
+
+model ApplicationNote {
+  id            String   @id @default(cuid())
+  applicationId String
+  authorId      String
+  body          String
+  createdAt     DateTime @default(now())
+
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  author      User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@map("application_notes")
+}
+
+model ApplicationEvent {
+  id            String               @id @default(cuid())
+  applicationId String
+  actorId       String?
+  type          ApplicationEventType
+  fromStatus    ApplicationStatus?
+  toStatus      ApplicationStatus?
+  metadata      Json?
+  createdAt     DateTime             @default(now())
+
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  actor       User?       @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@map("application_events")
+}
