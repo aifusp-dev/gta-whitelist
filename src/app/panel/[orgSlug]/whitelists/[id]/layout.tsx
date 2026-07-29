@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { verifySession, getOrgBySlug, getOrgRole } from "@/lib/dal";
 import { canManageOrg } from "@/lib/permissions";
+import { StatusControl } from "./StatusControl";
 
 export default async function WhitelistLayout({
   children,
@@ -30,12 +31,19 @@ export default async function WhitelistLayout({
 
   return (
     <div className="space-y-6">
-      <div>
-        <Link href={`/panel/${org.slug}/whitelists`} className="text-xs text-neutral-500 hover:text-neutral-300">
-          ← Whitelists
-        </Link>
-        <h1 className="text-xl font-bold mt-1">{whitelist.name}</h1>
-        <p className="text-xs text-neutral-500 font-mono">{whitelist.code}</p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <Link href={`/panel/${org.slug}/whitelists`} className="text-xs text-neutral-500 hover:text-neutral-300">
+            ← Whitelists
+          </Link>
+          <h1 className="text-xl font-bold mt-1">{whitelist.name}</h1>
+          <p className="text-xs text-neutral-500 font-mono">{whitelist.code}</p>
+        </div>
+        {canManage ? (
+          <StatusControl whitelistId={whitelist.id} status={whitelist.status} />
+        ) : (
+          <span className="text-xs text-neutral-500 uppercase">{whitelist.status}</span>
+        )}
       </div>
 
       <nav className="flex items-center gap-1 text-sm border-b border-neutral-800">
