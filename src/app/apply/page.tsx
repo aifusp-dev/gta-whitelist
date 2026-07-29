@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
-import { verifySession, getCurrentUser, listMyOrganizations } from "@/lib/dal";
+import { verifySession, getCurrentUser } from "@/lib/dal";
 import { logout } from "@/app/actions/auth";
 import { StartApplicationForm } from "./StartApplicationForm";
 
@@ -15,14 +15,13 @@ const STATUS_LABEL: Record<string, string> = {
 
 export default async function ApplyPage() {
   const { userId } = await verifySession();
-  const [user, applications, orgs] = await Promise.all([
+  const [user, applications] = await Promise.all([
     getCurrentUser(),
     prisma.application.findMany({
       where: { applicantId: userId },
       include: { whitelist: { select: { name: true, code: true } } },
       orderBy: { updatedAt: "desc" },
     }),
-    listMyOrganizations(userId),
   ]);
 
   return (
@@ -30,11 +29,9 @@ export default async function ApplyPage() {
       <div className="w-full max-w-sm flex items-center justify-between text-sm text-neutral-400">
         <span>{user?.name}</span>
         <div className="flex items-center gap-3">
-          {orgs.length > 0 && (
-            <Link href="/panel" className="hover:text-neutral-200">
-              Panel
-            </Link>
-          )}
+          <Link href="/panel" className="hover:text-neutral-200">
+            Panel
+          </Link>
           <form action={logout}>
             <button type="submit" className="hover:text-neutral-200">
               Salir
