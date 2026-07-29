@@ -17,6 +17,11 @@ const TYPE_LABEL: Record<QuestionType, string> = {
 
 const NEEDS_OPTIONS: QuestionType[] = ["SINGLE_SELECT", "MULTI_SELECT"];
 
+const inputClass =
+  "w-full bg-neutral-900/70 border border-neutral-800 rounded-xl px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-violet-500 focus:ring-2 focus:ring-violet-500/30";
+const smallInputClass =
+  "w-full bg-neutral-900/70 border border-neutral-800 rounded-lg px-2.5 py-1.5 text-sm outline-none transition-colors focus:border-violet-500 focus:ring-2 focus:ring-violet-500/30";
+
 export type QuestionEditorInitial = {
   type: QuestionType;
   label: string;
@@ -78,36 +83,38 @@ export function QuestionEditorDialog({
   const canSave = label.trim().length >= 2 && (!NEEDS_OPTIONS.includes(type) || options.some((o) => o.label.trim()));
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center px-4 z-50">
-      <div className="w-full max-w-md bg-neutral-950 border border-neutral-800 rounded-xl p-5 space-y-4 max-h-[90vh] overflow-y-auto">
-        <h3 className="font-semibold">{initial.label ? "Editar pregunta" : "Nueva pregunta"}</h3>
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center px-4 z-50">
+      <div className="w-full max-w-md bg-neutral-950 border border-neutral-800 rounded-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto shadow-2xl">
+        <h3 className="font-heading text-lg font-semibold">
+          {initial.label ? "Editar pregunta" : "Nueva pregunta"}
+        </h3>
 
         <label className="space-y-1.5 block">
-          <span className="text-xs font-medium text-neutral-400 uppercase tracking-wide">Pregunta</span>
+          <span className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Pregunta</span>
           <input
             value={label}
             onChange={(e) => setLabel(e.target.value)}
-            className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm outline-none focus:border-neutral-500"
+            className={inputClass}
           />
         </label>
 
         <label className="space-y-1.5 block">
-          <span className="text-xs font-medium text-neutral-400 uppercase tracking-wide">
+          <span className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">
             Texto de ayuda (opcional)
           </span>
           <input
             value={helpText}
             onChange={(e) => setHelpText(e.target.value)}
-            className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm outline-none focus:border-neutral-500"
+            className={inputClass}
           />
         </label>
 
         <label className="space-y-1.5 block">
-          <span className="text-xs font-medium text-neutral-400 uppercase tracking-wide">Tipo</span>
+          <span className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Tipo</span>
           <select
             value={type}
             onChange={(e) => setType(e.target.value as QuestionType)}
-            className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm"
+            className={inputClass}
           >
             {Object.entries(TYPE_LABEL).map(([value, label]) => (
               <option key={value} value={value}>
@@ -136,7 +143,7 @@ export function QuestionEditorDialog({
                 min={0}
                 defaultValue={(validation.minLength as number) ?? ""}
                 onChange={(e) => setV("minLength", e.target.value ? Number(e.target.value) : "")}
-                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-2 py-1.5"
+                className={smallInputClass}
               />
             </label>
             <label className="space-y-1 block text-xs">
@@ -146,7 +153,7 @@ export function QuestionEditorDialog({
                 min={0}
                 defaultValue={(validation.maxLength as number) ?? ""}
                 onChange={(e) => setV("maxLength", e.target.value ? Number(e.target.value) : "")}
-                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-2 py-1.5"
+                className={smallInputClass}
               />
             </label>
           </div>
@@ -160,7 +167,7 @@ export function QuestionEditorDialog({
                 type="number"
                 defaultValue={(validation.min as number) ?? ""}
                 onChange={(e) => setV("min", e.target.value ? Number(e.target.value) : "")}
-                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-2 py-1.5"
+                className={smallInputClass}
               />
             </label>
             <label className="space-y-1 block text-xs">
@@ -169,7 +176,7 @@ export function QuestionEditorDialog({
                 type="number"
                 defaultValue={(validation.max as number) ?? ""}
                 onChange={(e) => setV("max", e.target.value ? Number(e.target.value) : "")}
-                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-2 py-1.5"
+                className={smallInputClass}
               />
             </label>
             <label className="flex items-center gap-2 text-xs col-span-2">
@@ -186,7 +193,7 @@ export function QuestionEditorDialog({
 
         {NEEDS_OPTIONS.includes(type) && (
           <div className="space-y-2">
-            <span className="text-xs font-medium text-neutral-400 uppercase tracking-wide">Opciones</span>
+            <span className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Opciones</span>
             {options.map((opt, i) => (
               <div key={opt.id} className="flex items-center gap-1">
                 <input
@@ -194,7 +201,7 @@ export function QuestionEditorDialog({
                   onChange={(e) =>
                     setOptions((o) => o.map((x, xi) => (xi === i ? { ...x, label: e.target.value } : x)))
                   }
-                  className="flex-1 bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-neutral-500"
+                  className={smallInputClass}
                 />
                 <button type="button" onClick={() => moveOption(i, -1)} className="text-neutral-500 px-1">
                   ↑
@@ -220,7 +227,7 @@ export function QuestionEditorDialog({
                     min={0}
                     defaultValue={(validation.minSelected as number) ?? ""}
                     onChange={(e) => setV("minSelected", e.target.value ? Number(e.target.value) : "")}
-                    className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-2 py-1.5"
+                    className={smallInputClass}
                   />
                 </label>
                 <label className="space-y-1 block text-xs">
@@ -230,7 +237,7 @@ export function QuestionEditorDialog({
                     min={0}
                     defaultValue={(validation.maxSelected as number) ?? ""}
                     onChange={(e) => setV("maxSelected", e.target.value ? Number(e.target.value) : "")}
-                    className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-2 py-1.5"
+                    className={smallInputClass}
                   />
                 </label>
               </div>
@@ -254,7 +261,7 @@ export function QuestionEditorDialog({
           <button
             type="button"
             onClick={onClose}
-            className="text-sm text-neutral-400 hover:text-neutral-200 px-3 py-2"
+            className="text-sm text-neutral-400 hover:text-neutral-200 px-3 py-2 transition-colors"
           >
             Cancelar
           </button>
@@ -262,7 +269,7 @@ export function QuestionEditorDialog({
             type="button"
             onClick={save}
             disabled={!canSave || saving}
-            className="bg-violet-600 rounded-lg px-4 py-2 text-sm font-semibold disabled:opacity-50"
+            className="bg-violet-600 hover:bg-violet-500 rounded-xl px-4 py-2.5 text-sm font-heading font-semibold transition-colors disabled:opacity-50"
           >
             {saving ? "Guardando..." : "Guardar"}
           </button>

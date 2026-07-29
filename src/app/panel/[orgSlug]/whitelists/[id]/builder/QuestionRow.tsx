@@ -51,13 +51,13 @@ export function QuestionRow({
     <div
       ref={setNodeRef}
       style={style}
-      className="flex items-center gap-2 px-3 py-2 bg-neutral-900 border border-neutral-800 rounded-lg"
+      className="flex items-center gap-3 px-3.5 py-2.5 bg-neutral-950/60 border border-neutral-800 rounded-xl hover:border-neutral-700 transition-colors"
     >
       <button
         type="button"
         {...attributes}
         {...listeners}
-        className="text-neutral-600 hover:text-neutral-300 cursor-grab active:cursor-grabbing touch-none"
+        className="text-neutral-600 hover:text-neutral-300 cursor-grab active:cursor-grabbing touch-none shrink-0"
         aria-label="Arrastrar para reordenar"
       >
         <GripVertical size={16} />
@@ -68,7 +68,9 @@ export function QuestionRow({
           {question.label}
           {question.required && <span className="text-amber-400 ml-1">*</span>}
         </p>
-        <p className="text-xs text-neutral-500">{TYPE_LABEL[question.type]}</p>
+        <span className="inline-block mt-0.5 text-[11px] font-medium text-violet-300/80 bg-violet-500/10 rounded-full px-2 py-0.5">
+          {TYPE_LABEL[question.type]}
+        </span>
       </div>
 
       {otherSections.length > 0 && (
@@ -91,10 +93,18 @@ export function QuestionRow({
         </select>
       )}
 
-      <button type="button" onClick={onEdit} className="text-xs text-neutral-400 hover:text-neutral-200">
+      <button
+        type="button"
+        onClick={onEdit}
+        className="text-xs font-medium text-neutral-400 hover:text-neutral-200 transition-colors"
+      >
         Editar
       </button>
-      <button type="button" onClick={onArchive} className="text-xs text-red-400 hover:text-red-300">
+      <button
+        type="button"
+        onClick={onArchive}
+        className="text-xs font-medium text-red-400/80 hover:text-red-400 transition-colors"
+      >
         Eliminar
       </button>
     </div>

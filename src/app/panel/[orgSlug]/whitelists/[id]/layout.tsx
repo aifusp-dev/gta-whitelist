@@ -36,8 +36,8 @@ export default async function WhitelistLayout({
           <Link href={`/panel/${org.slug}/whitelists`} className="text-xs text-neutral-500 hover:text-neutral-300">
             ← Whitelists
           </Link>
-          <h1 className="text-xl font-bold mt-1">{whitelist.name}</h1>
-          <p className="text-xs text-neutral-500 font-mono">{whitelist.code}</p>
+          <h1 className="font-heading text-2xl font-semibold tracking-tight mt-1">{whitelist.name}</h1>
+          <p className="text-xs text-neutral-500 font-mono tracking-wide">{whitelist.code}</p>
         </div>
         {canManage ? (
           <StatusControl whitelistId={whitelist.id} status={whitelist.status} />
@@ -50,14 +50,14 @@ export default async function WhitelistLayout({
         {canManage && (
           <Link
             href={`/panel/${org.slug}/whitelists/${whitelist.id}/builder`}
-            className="px-3 py-2 text-neutral-300 hover:text-white transition-colors"
+            className="px-3 py-2.5 font-heading font-medium text-neutral-400 hover:text-white transition-colors"
           >
             Editor
           </Link>
         )}
         <Link
           href={`/panel/${org.slug}/whitelists/${whitelist.id}/applications`}
-          className="px-3 py-2 text-neutral-300 hover:text-white transition-colors"
+          className="px-3 py-2.5 font-heading font-medium text-neutral-400 hover:text-white transition-colors"
         >
           Postulaciones
         </Link>

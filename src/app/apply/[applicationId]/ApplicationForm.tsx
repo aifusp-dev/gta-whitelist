@@ -32,11 +32,45 @@ const STATUS_TEXT: Record<ApplicationStatus, string> = {
   REJECTED: "No aprobada",
 };
 
+const STATUS_DOT: Record<ApplicationStatus, string> = {
+  IN_PROGRESS: "bg-neutral-500",
+  SUBMITTED: "bg-blue-400",
+  IN_REVIEW: "bg-amber-400",
+  INTERVIEW: "bg-violet-400",
+  APPROVED: "bg-green-400",
+  REJECTED: "bg-red-400",
+};
+
+const fieldInputClass =
+  "w-full bg-neutral-900/70 border border-neutral-800 rounded-xl px-4 py-3 text-sm outline-none transition-colors focus:border-violet-500 focus:ring-2 focus:ring-violet-500/30 disabled:opacity-60";
+
 function StatusDot({ status }: { status: AutosaveStatus }) {
   if (status === "idle") return null;
   const text = { saving: "Guardando…", saved: "Guardado", error: "No se pudo guardar" }[status];
   const color = { saving: "text-neutral-500", saved: "text-green-500", error: "text-red-400" }[status];
-  return <span className={`text-xs ${color}`}>{text}</span>;
+  return <span className={`text-xs font-medium ${color}`}>{text}</span>;
+}
+
+function OptionCard({
+  label,
+  checked,
+  ...inputProps
+}: {
+  label: string;
+  checked: boolean;
+} & React.InputHTMLAttributes<HTMLInputElement>) {
+  return (
+    <label
+      className={`flex items-center gap-3 rounded-xl border px-4 py-3 text-sm cursor-pointer transition-colors ${
+        checked
+          ? "border-violet-500 bg-violet-500/10"
+          : "border-neutral-800 bg-neutral-900/50 hover:border-neutral-700"
+      } ${inputProps.disabled ? "cursor-default opacity-60" : ""}`}
+    >
+      <input {...inputProps} checked={checked} className="accent-violet-500 w-4 h-4 shrink-0" />
+      {label}
+    </label>
+  );
 }
 
 function QuestionField({
@@ -62,19 +96,16 @@ function QuestionField({
     onFlushed,
   });
 
-  const inputClass =
-    "w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm outline-none focus:border-neutral-500 disabled:opacity-60";
-
   return (
-    <div id={`q-${question.id}`} className="space-y-1.5">
+    <div id={`q-${question.id}`} className="space-y-2">
       <div className="flex items-center justify-between gap-2">
-        <label className="text-sm">
+        <label className="text-sm font-medium">
           {question.label}
           {question.required && <span className="text-amber-400 ml-1">*</span>}
         </label>
         <StatusDot status={status} />
       </div>
-      {question.helpText && <p className="text-xs text-neutral-500">{question.helpText}</p>}
+      {question.helpText && <p className="text-xs text-neutral-500 -mt-1">{question.helpText}</p>}
 
       {question.type === "SHORT_TEXT" && (
         <input
@@ -83,7 +114,7 @@ function QuestionField({
           onChange={(e) => onChange(e.target.value)}
           onBlur={onBlur}
           disabled={readOnly}
-          className={inputClass}
+          className={fieldInputClass}
         />
       )}
 
@@ -94,7 +125,7 @@ function QuestionField({
           onBlur={onBlur}
           disabled={readOnly}
           rows={4}
-          className={inputClass}
+          className={fieldInputClass}
         />
       )}
 
@@ -105,7 +136,7 @@ function QuestionField({
           onChange={(e) => onChange(e.target.value === "" ? null : Number(e.target.value))}
           onBlur={onBlur}
           disabled={readOnly}
-          className={inputClass}
+          className={fieldInputClass}
         />
       )}
 
@@ -116,66 +147,59 @@ function QuestionField({
           onChange={(e) => onChange(e.target.value)}
           onBlur={onBlur}
           disabled={readOnly}
-          className={inputClass}
+          className={fieldInputClass}
         />
       )}
 
       {question.type === "SINGLE_SELECT" && (
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           {(question.options ?? []).map((opt) => (
-            <label key={opt.id} className="flex items-center gap-2 text-sm">
-              <input
-                type="radio"
-                name={question.id}
-                checked={value === opt.id}
-                onChange={() => onChange(opt.id)}
-                onBlur={onBlur}
-                disabled={readOnly}
-                className="accent-violet-600"
-              />
-              {opt.label}
-            </label>
+            <OptionCard
+              key={opt.id}
+              type="radio"
+              name={question.id}
+              label={opt.label}
+              checked={value === opt.id}
+              onChange={() => onChange(opt.id)}
+              onBlur={onBlur}
+              disabled={readOnly}
+            />
           ))}
         </div>
       )}
 
       {question.type === "MULTI_SELECT" && (
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           {(question.options ?? []).map((opt) => {
             const arr = Array.isArray(value) ? (value as string[]) : [];
             const checked = arr.includes(opt.id);
             return (
-              <label key={opt.id} className="flex items-center gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  checked={checked}
-                  onChange={(e) => {
-                    const next = e.target.checked ? [...arr, opt.id] : arr.filter((id) => id !== opt.id);
-                    onChange(next);
-                  }}
-                  onBlur={onBlur}
-                  disabled={readOnly}
-                  className="accent-violet-600"
-                />
-                {opt.label}
-              </label>
+              <OptionCard
+                key={opt.id}
+                type="checkbox"
+                label={opt.label}
+                checked={checked}
+                onChange={(e) => {
+                  const next = e.target.checked ? [...arr, opt.id] : arr.filter((id) => id !== opt.id);
+                  onChange(next);
+                }}
+                onBlur={onBlur}
+                disabled={readOnly}
+              />
             );
           })}
         </div>
       )}
 
       {question.type === "CHECKBOX" && (
-        <label className="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={Boolean(value)}
-            onChange={(e) => onChange(e.target.checked)}
-            onBlur={onBlur}
-            disabled={readOnly}
-            className="accent-violet-600"
-          />
-          Confirmo
-        </label>
+        <OptionCard
+          type="checkbox"
+          label="Confirmo"
+          checked={Boolean(value)}
+          onChange={(e) => onChange(e.target.checked)}
+          onBlur={onBlur}
+          disabled={readOnly}
+        />
       )}
 
       {error && <p className="text-xs text-red-400">{error}</p>}
@@ -256,20 +280,21 @@ export function ApplicationForm({
   const canSubmit = !readOnly && !submitting && dirtyIds.size === 0;
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-8">
       {readOnly && (
-        <div className="bg-neutral-900 border border-neutral-800 rounded-lg px-4 py-3 text-sm">
-          Estado: <span className="font-semibold">{STATUS_TEXT[status]}</span>
+        <div className="flex items-center gap-2.5 bg-neutral-900/60 border border-neutral-800 rounded-xl px-4 py-3 text-sm">
+          <span className={`w-2 h-2 rounded-full ${STATUS_DOT[status]}`} />
+          <span className="font-heading font-medium">{STATUS_TEXT[status]}</span>
         </div>
       )}
 
       {sections.map((section) => (
-        <div key={section.id} className="space-y-4">
+        <div key={section.id} className="bg-neutral-900/30 border border-neutral-800 rounded-2xl p-6 space-y-6">
           <div>
-            <h2 className="font-semibold">{section.title}</h2>
-            {section.description && <p className="text-xs text-neutral-500">{section.description}</p>}
+            <h2 className="font-heading text-lg font-semibold">{section.title}</h2>
+            {section.description && <p className="text-xs text-neutral-500 mt-1">{section.description}</p>}
           </div>
-          <div className="space-y-5">
+          <div className="space-y-6">
             {section.questions.map((q) => (
               <QuestionField
                 key={q.id}
@@ -291,16 +316,14 @@ export function ApplicationForm({
       )}
 
       {!readOnly && (
-        <div className="space-y-2 pt-4 border-t border-neutral-800">
+        <div className="space-y-2 pt-2">
           {submitError && <p className="text-sm text-red-400">{submitError}</p>}
-          {dirtyIds.size > 0 && (
-            <p className="text-xs text-neutral-500">Guardando cambios pendientes…</p>
-          )}
+          {dirtyIds.size > 0 && <p className="text-xs text-neutral-500">Guardando cambios pendientes…</p>}
           <button
             type="button"
             onClick={handleSubmit}
             disabled={canSubmit === false}
-            className="w-full bg-violet-600 font-semibold rounded-lg px-4 py-3 text-sm hover:opacity-90 transition-opacity disabled:opacity-50"
+            className="w-full bg-violet-600 hover:bg-violet-500 font-heading font-semibold rounded-xl px-4 py-3.5 text-sm transition-colors disabled:opacity-50"
           >
             {submitting ? "Enviando..." : "Enviar postulación"}
           </button>

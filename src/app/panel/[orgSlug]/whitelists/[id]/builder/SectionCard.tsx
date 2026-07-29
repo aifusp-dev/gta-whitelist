@@ -51,8 +51,12 @@ export function SectionCard({
   });
 
   return (
-    <div ref={sortable.setNodeRef} style={style} className="border border-neutral-800 rounded-xl p-4 space-y-3">
-      <div className="flex items-center gap-2">
+    <div
+      ref={sortable.setNodeRef}
+      style={style}
+      className="bg-neutral-900/40 border border-neutral-800 rounded-2xl p-5 space-y-4"
+    >
+      <div className="flex items-center gap-2.5">
         <button
           type="button"
           {...sortable.attributes}
@@ -73,23 +77,30 @@ export function SectionCard({
               if (title.trim() && title !== section.title) onEditSectionTitle(title.trim());
             }}
             onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
-            className="flex-1 bg-neutral-900 border border-neutral-700 rounded-lg px-2 py-1 font-semibold"
+            className="flex-1 bg-neutral-950 border border-violet-500/60 rounded-lg px-2.5 py-1 font-heading font-semibold outline-none"
           />
         ) : (
-          <h3 className="flex-1 font-semibold cursor-text" onClick={() => setEditingTitle(true)}>
+          <h3
+            className="flex-1 font-heading font-semibold text-lg cursor-text"
+            onClick={() => setEditingTitle(true)}
+          >
             {section.title}
           </h3>
         )}
 
-        <button type="button" onClick={onArchiveSection} className="text-xs text-red-400 hover:text-red-300">
+        <button
+          type="button"
+          onClick={onArchiveSection}
+          className="text-xs text-red-400/80 hover:text-red-400 transition-colors"
+        >
           Eliminar sección
         </button>
       </div>
 
-      <div ref={setDroppableRef} className="space-y-2 pl-6 min-h-[2.5rem]">
+      <div ref={setDroppableRef} className="space-y-2 pl-[26px] min-h-[2.5rem]">
         <SortableContext items={section.questions.map((q) => q.id)} strategy={verticalListSortingStrategy}>
           {section.questions.length === 0 && (
-            <p className="text-xs text-neutral-600">Suelta preguntas aquí o añade una nueva.</p>
+            <p className="text-xs text-neutral-600 italic">Suelta preguntas aquí o añade una nueva.</p>
           )}
           {section.questions.map((q) => (
             <QuestionRow
@@ -103,7 +114,11 @@ export function SectionCard({
             />
           ))}
         </SortableContext>
-        <button type="button" onClick={onAddQuestion} className="text-xs text-violet-400 hover:underline">
+        <button
+          type="button"
+          onClick={onAddQuestion}
+          className="text-xs font-medium text-violet-400 hover:text-violet-300 transition-colors"
+        >
           + Añadir pregunta
         </button>
       </div>

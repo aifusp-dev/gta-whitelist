@@ -303,19 +303,19 @@ export function BuilderBoard({ whitelistId, sections }: { whitelistId: string; s
           })}
         </SortableContext>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 pt-1">
           <input
             value={newSectionTitle}
             onChange={(e) => setNewSectionTitle(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && addSection()}
             placeholder="Título de nueva sección (ej. Datos personales)"
-            className="flex-1 bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm outline-none focus:border-neutral-500"
+            className="flex-1 bg-neutral-900/70 border border-neutral-800 rounded-xl px-4 py-2.5 text-sm outline-none transition-colors focus:border-violet-500 focus:ring-2 focus:ring-violet-500/30"
           />
           <button
             type="button"
             onClick={addSection}
             disabled={!newSectionTitle.trim()}
-            className="bg-neutral-800 rounded-lg px-4 text-sm font-semibold disabled:opacity-50"
+            className="bg-neutral-800 hover:bg-neutral-700 rounded-xl px-4 text-sm font-heading font-semibold transition-colors disabled:opacity-50"
           >
             + Sección
           </button>

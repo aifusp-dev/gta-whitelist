@@ -40,24 +40,24 @@ export default async function ApplyPage() {
         </div>
       </div>
 
-      <div className="w-full max-w-sm space-y-3 text-center">
-        <h1 className="text-xl font-bold">Introduce tu código de whitelist</h1>
+      <div className="w-full max-w-sm space-y-4 text-center">
+        <h1 className="font-heading text-2xl font-semibold tracking-tight">Introduce tu código de whitelist</h1>
         <StartApplicationForm />
       </div>
 
       {applications.length > 0 && (
         <div className="w-full max-w-sm space-y-3">
-          <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-wide">Tus postulaciones</h2>
-          <ul className="divide-y divide-neutral-800 border border-neutral-800 rounded-lg">
+          <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">Tus postulaciones</h2>
+          <ul className="divide-y divide-neutral-800 border border-neutral-800 rounded-2xl overflow-hidden">
             {applications.map((app) => (
               <li key={app.id}>
                 <Link
                   href={`/apply/${app.id}`}
-                  className="flex items-center justify-between px-4 py-3 hover:bg-neutral-900 transition-colors"
+                  className="flex items-center justify-between px-4 py-3.5 hover:bg-neutral-900/70 transition-colors"
                 >
                   <div>
                     <p className="text-sm font-medium">{app.whitelist.name}</p>
-                    <p className="text-xs text-neutral-500 font-mono">{app.whitelist.code}</p>
+                    <p className="text-xs text-neutral-500 font-mono tracking-wide">{app.whitelist.code}</p>
                   </div>
                   <span className="text-xs text-neutral-400">{STATUS_LABEL[app.status]}</span>
                 </Link>

@@ -11,10 +11,10 @@ export default async function LoginPage({
     <div className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-sm space-y-8 text-center">
         <div className="space-y-2">
-          <div className="mx-auto w-14 h-14 rounded-xl bg-violet-600 flex items-center justify-center text-2xl font-bold">
+          <div className="mx-auto w-14 h-14 rounded-2xl bg-violet-600 flex items-center justify-center font-heading text-2xl font-bold">
             W
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">Whitelist</h1>
+          <h1 className="font-heading text-2xl font-semibold tracking-tight">Whitelist</h1>
           <p className="text-sm text-neutral-400">
             Inicia sesión con Google para continuar
           </p>

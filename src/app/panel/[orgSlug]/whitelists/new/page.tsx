@@ -14,7 +14,7 @@ export default async function NewWhitelistPage({ params }: { params: Promise<{ o
 
   return (
     <div className="max-w-md">
-      <h1 className="text-xl font-bold mb-6">Nueva whitelist</h1>
+      <h1 className="font-heading text-2xl font-semibold tracking-tight mb-6">Nueva whitelist</h1>
       <NewWhitelistForm organizationId={org.id} orgSlug={org.slug} />
     </div>
   );

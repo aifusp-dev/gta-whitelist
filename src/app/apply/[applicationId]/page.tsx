@@ -31,8 +31,8 @@ export default async function ApplicationPage({ params }: { params: Promise<{ ap
           <Link href="/apply" className="text-xs text-neutral-500 hover:text-neutral-300">
             ← Mis postulaciones
           </Link>
-          <h1 className="text-xl font-bold mt-1">{application.whitelist.name}</h1>
-          <p className="text-xs text-neutral-500 font-mono">{application.whitelist.code}</p>
+          <h1 className="font-heading text-2xl font-semibold tracking-tight mt-1">{application.whitelist.name}</h1>
+          <p className="text-xs text-neutral-500 font-mono tracking-wide">{application.whitelist.code}</p>
         </div>
 
         <ApplicationForm
